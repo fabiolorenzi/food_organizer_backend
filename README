@@ -1,1 +1,3 @@
 Food Organizer Backend
+
+If you are going to split the models.py file, update the __init__.py file as you see there.
