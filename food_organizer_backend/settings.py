@@ -86,7 +86,7 @@ DATABASES = {
         #"NAME": "food_organizer",
         "CLIENT": {
             "host": "mongodb+srv://fabiolorenzi13975:{passw}@cluster0.on5feke.mongodb.net/?retryWrites=true&w=majority".format(passw=passw),
-            "name": "fabiolorenzi13975",
+            "name": "food_organizer_backend_db",
             "authMechanism": "SCRAM-SHA-1"
         }
     }
