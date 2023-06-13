@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from env import passw
+from setting_data import db_passw
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,9 +83,8 @@ WSGI_APPLICATION = 'food_organizer_backend.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "djongo",
-        #"NAME": "food_organizer",
         "CLIENT": {
-            "host": "mongodb+srv://fabiolorenzi13975:{passw}@cluster0.on5feke.mongodb.net/?retryWrites=true&w=majority".format(passw=passw),
+            "host": "mongodb+srv://fabiolorenzi13975:{passw}@cluster0.on5feke.mongodb.net/?retryWrites=true&w=majority".format(passw=db_passw),
             "name": "food_organizer_backend_db",
             "authMechanism": "SCRAM-SHA-1"
         }
