@@ -1,4 +1,4 @@
 import django
 
 django.setup()
-from .models import test
+from .models import user
