@@ -12,29 +12,3 @@ class User(models.Model):
     recovery = models.CharField(max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-
-    def __init__(
-            self,
-            _username,
-            _email,
-            _password,
-            _auth_from,
-            _auth_until,
-            _failed_attempts,
-            _blocked_until,
-            _recovery,
-            _created_at,
-            _updated_at,
-            *args,
-            **kwargs):
-        super().__init__(*args, **kwargs)
-        self.username = _username
-        self.email = _email
-        self.password = _password
-        self.auth_from = _auth_from
-        self.auth_until = _auth_until
-        self.failed_attempts = _failed_attempts
-        self.blocked_until = _blocked_until
-        self.recovery = _recovery
-        self.created_at = _created_at
-        self.updated_at = _updated_at
