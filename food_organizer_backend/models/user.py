@@ -9,6 +9,5 @@ class User(models.Model):
     auth_until = models.DateTimeField()
     failed_attempts = models.IntegerField()
     blocked_until = models.DateTimeField()
-    recovery = models.CharField(max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
