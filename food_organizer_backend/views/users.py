@@ -9,5 +9,5 @@ from ..models.user import User
 @api_view(["GET"])
 def users_list(request):
     all_users = User.object.all()
-    serializer = UserSerializer(all_users, many = True)
+    serializer = UserSerializer(all_users, many=True)
     return JsonResponse(serializer.data, safe=False)
