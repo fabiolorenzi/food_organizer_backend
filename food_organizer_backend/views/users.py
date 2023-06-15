@@ -56,6 +56,45 @@ def user_single(request, id):
         if request.method == "GET":
             serializer = UserSerializer(target)
             return Response(serializer.data)
+        elif request.method == "PUT":
+            target_ser = UserSerializer(target).data
+            username = request.data["username"]
+            email = request.data["email"]
+            password = crypt(request.data["password"], user_salt)
+            auth_from = datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
+            auth_until = (datetime.now() + timedelta(hours=24)).strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
+            failed_attempts = 0
+            blocked_until = (datetime.now() - timedelta(hours=24)).strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
+            created_at = target_ser["created_at"]
+            updated_at = auth_from
+            serializer = UserSerializer(
+                target,
+                data={
+                    "username": username,
+                    "email": email,
+                    "password": password.decode(),
+                    "auth_from": auth_from,
+                    "auth_until": auth_until,
+                    "failed_attempts": failed_attempts,
+                    "blocked_until": blocked_until,
+                    "created_at": created_at,
+                    "updated_at": updated_at
+                }
+            )
+            if serializer.is_valid():
+                serializer.save()
+                new_token = (
+                        "id:" + str(serializer.data["id"]) +
+                        ">>username:" + serializer.data["username"] +
+                        ">>email:" + serializer.data["email"] +
+                        ">>password:" + serializer.data["password"] +
+                        ">>created_at:" + serializer.data["created_at"] +
+                        ">>updated_at:" + updated_at +
+                        ">>auth_from:" + serializer.data["auth_from"] +
+                        ">>auth_until:" + serializer.data["auth_until"]
+                )
+                return JsonResponse({"token": crypt(new_token, user_salt).decode(), "data": serializer.data})
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_403_FORBIDDEN)
 
 

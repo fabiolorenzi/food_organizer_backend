@@ -30,13 +30,11 @@ def checkToken(token, users):
             auth_until = users[index]["auth_until"][0:13] == tokenDict["auth_until"]
 
             if username and email and password and created_at and auth_from and auth_until:
-                print("passed")
                 if users[index]["auth_from"] < (datetime.now().strftime("%Y/%m/%d %H:%M:%S")).replace(" ", "T").replace("/", "-") and users[index]["auth_until"] > (datetime.now().strftime("%Y/%m/%d %H:%M:%S")).replace(" ", "T").replace("/", "-"):
                     return int(tokenDict["id"])
                 else:
                     return 0
             else:
-                print("not passed")
                 return 0
         else:
             index += 1
