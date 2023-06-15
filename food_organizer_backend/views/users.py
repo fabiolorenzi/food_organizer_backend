@@ -95,6 +95,9 @@ def user_single(request, id):
                 )
                 return JsonResponse({"token": crypt(new_token, user_salt).decode(), "data": serializer.data})
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == "DELETE":
+            target.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
     return Response(status=status.HTTP_403_FORBIDDEN)
 
 
