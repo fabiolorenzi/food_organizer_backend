@@ -21,5 +21,6 @@ from .views import users
 urlpatterns = [
     #path('admin/', admin.site.urls),
     path("api/v1/users", users.users_list),
-    path("api/v1/users/<int:id>", users.user_single)
+    path("api/v1/users/<int:id>", users.user_single),
+    path("api/v1/users/login", users.user_login)
 ]

@@ -5,7 +5,7 @@ from ..models.user import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [
+        fields = (
             "id",
             "username",
             "email",
@@ -16,4 +16,4 @@ class UserSerializer(serializers.ModelSerializer):
             "blocked_until",
             "created_at",
             "updated_at"
-        ]
+        )
