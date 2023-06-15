@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import users
+from .views import users, week_plans
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
     path("api/v1/users", users.users_list),
     path("api/v1/users/<int:id>", users.user_single),
-    path("api/v1/users/login", users.user_login)
+    path("api/v1/users/login", users.user_login),
+    path("api/v1/week-plans", week_plans.week_plan_list)
 ]
