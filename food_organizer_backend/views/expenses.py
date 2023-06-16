@@ -19,16 +19,16 @@ def expense_list(request):
     user_id = checkToken(token, serializer.data)
     if id:
         if request.method == "GET":
-            all_plans = Expense.objects.filter(user_id=user_id)
+            all_expenses = Expense.objects.filter(user_id=user_id)
 
             min_date = request.GET.get("min_date", None)
             if min_date is not None:
-                all_plans = all_plans.filter(shopping_date__gte=min_date)
+                all_expenses = all_expenses.filter(shopping_date__gte=min_date)
             max_date = request.GET.get("max_date", None)
             if max_date is not None:
-                all_plans = all_plans.filter(shopping_date__lte=max_date)
+                all_expenses = all_expenses.filter(shopping_date__lte=max_date)
 
-            serializer = ExpenseSerializer(all_plans, many=True)
+            serializer = ExpenseSerializer(all_expenses, many=True)
             return JsonResponse(serializer.data, safe=False)
         elif request.method == "POST":
             serializer = ExpenseSerializer(data={

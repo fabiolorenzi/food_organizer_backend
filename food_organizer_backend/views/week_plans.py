@@ -20,6 +20,14 @@ def week_plan_list(request):
     if id:
         if request.method == "GET":
             all_plans = WeekPlan.objects.filter(user_id=user_id)
+
+            min_date = request.GET.get("min_date", None)
+            if min_date is not None:
+                all_plans = all_plans.filter(monday_position__gte=min_date)
+            max_date = request.GET.get("max_date", None)
+            if max_date is not None:
+                all_plans = all_plans.filter(monday_position__lte=max_date)
+
             serializer = WeekPlanSerializer(all_plans, many=True)
             return JsonResponse(serializer.data, safe=False)
         elif request.method == "POST":
