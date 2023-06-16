@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.db.models import F
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,10 +20,26 @@ def product_list(request):
     user_id = checkToken(token, serializer.data)
     if id:
         if request.method == "GET":
-            all_plans = Product.objects.filter(user_id=user_id)
-            serializer = ProductSerializer(all_plans, many=True)
+            all_products = Product.objects.filter(user_id=user_id)
+
+            # The code below is to use query strings
+            expire_date = request.GET.get("expire_date", None)
+            if expire_date is not None:
+                all_products = all_products.filter(expire_date=expire_date)
+            position = request.GET.get("position", None)
+            if position is not None:
+                all_products = all_products.filter(position=position)
+            check_availability = request.GET.get("check_availability", None)
+            if check_availability is not None:
+                all_products = all_products.filter(quantity_alarm=0).filter(quantity_alarm_active=0)
+
+            serializer = ProductSerializer(all_products, many=True)
             return JsonResponse(serializer.data, safe=False)
         elif request.method == "POST":
+            if request.data["remaining"] <= request.data["quantity_alarm_threshold"]:
+                quantity_alarm_active = 0
+            else:
+                quantity_alarm_active = 1
             serializer = ProductSerializer(data={
                 "user_id": user_id,
                 "name": request.data["name"],
@@ -32,6 +49,7 @@ def product_list(request):
                 "measure_unit": request.data["measure_unit"],
                 "quantity_alarm": request.data["quantity_alarm"],
                 "quantity_alarm_threshold": request.data["quantity_alarm_threshold"],
+                "quantity_alarm_active": quantity_alarm_active,
                 "created_at": datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-"),
                 "updated_at": datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
             })
@@ -66,6 +84,10 @@ def product_single(request, id):
                 target_ser = ProductSerializer(target).data
                 created_at = target_ser["created_at"]
                 updated_at = datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
+                if request.data["remaining"] <= request.data["quantity_alarm_threshold"]:
+                    quantity_alarm_active = 0
+                else:
+                    quantity_alarm_active = 1
                 serializer = ProductSerializer(
                     target,
                     data={
@@ -77,6 +99,7 @@ def product_single(request, id):
                         "measure_unit": request.data["measure_unit"],
                         "quantity_alarm": request.data["quantity_alarm"],
                         "quantity_alarm_threshold": request.data["quantity_alarm_threshold"],
+                        "quantity_alarm_active": quantity_alarm_active,
                         "created_at": created_at,
                         "updated_at": updated_at
                     }

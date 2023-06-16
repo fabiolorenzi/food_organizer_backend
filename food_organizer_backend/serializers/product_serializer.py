@@ -15,6 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "measure_unit",
             "quantity_alarm",
             "quantity_alarm_threshold",
+            "quantity_alarm_active",
             "created_at",
             "updated_at"
         )
