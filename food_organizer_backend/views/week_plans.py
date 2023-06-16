@@ -72,5 +72,7 @@ def week_plan_single(request, id):
 
         if request.method == "GET":
             serializer = WeekPlanSerializer(target)
-            return Response(serializer.data)
+            if serializer.data["user_id"] == user_id:
+                return Response(serializer.data)
+            return Response(status=status.HTTP_403_FORBIDDEN)
     return Response(status=status.HTTP_403_FORBIDDEN)
