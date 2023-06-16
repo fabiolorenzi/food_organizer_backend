@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from ..serializers.user_serializer import UserSerializer
-from ..tools.security import crypt, decrypt, checkToken
+from ..tools.security import crypt, decrypt, checkToken, checkEmailUniqueness
 from ..models.user import User
 from datetime import datetime, timedelta
 from setting_data import user_salt
@@ -11,13 +11,15 @@ from setting_data import user_salt
 
 @api_view(["GET", "POST"])
 def users_list(request):
+    all_users = User.objects.all()
+    serializer = UserSerializer(all_users, many=True)
     if request.method == "GET":
-        all_users = User.objects.all()
-        serializer = UserSerializer(all_users, many=True)
         return JsonResponse(serializer.data, safe=False)
     elif request.method == "POST":
         username = request.data["username"]
-        email = request.data["email"]
+        email = checkEmailUniqueness(serializer.data, request.data["email"])
+        if len(email) == 0:
+            return JsonResponse({"message": "The email must be unique", "status": status.HTTP_400_BAD_REQUEST})
         password = crypt(request.data["password"], user_salt)
         created_at = datetime.now()
         auth_from = created_at
@@ -59,7 +61,12 @@ def user_single(request, id):
         elif request.method == "PUT":
             target_ser = UserSerializer(target).data
             username = request.data["username"]
-            email = request.data["email"]
+            email = checkEmailUniqueness(serializer.data, request.data["email"])
+            if len(email) == 0:
+                if target_ser["email"] == request.data["email"]:
+                    email = target_ser["email"]
+                else:
+                    return JsonResponse({"message": "The email must be unique", "status": status.HTTP_400_BAD_REQUEST})
             password = crypt(request.data["password"], user_salt)
             auth_from = datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
             auth_until = (datetime.now() + timedelta(hours=24)).strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")

@@ -39,3 +39,10 @@ def checkToken(token, users):
         else:
             index += 1
     return 0
+
+
+def checkEmailUniqueness(allUser, email):
+    for x in allUser:
+        if x["email"] == email:
+            return ""
+    return email
