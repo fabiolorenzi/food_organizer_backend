@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import users, week_plans
+from .views import users, week_plans, expenses
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
@@ -24,5 +24,6 @@ urlpatterns = [
     path("api/v1/users/<int:id>", users.user_single),
     path("api/v1/users/login", users.user_login),
     path("api/v1/week-plans", week_plans.week_plan_list),
-    path("api/v1/week-plans/<int:id>", week_plans.week_plan_single)
+    path("api/v1/week-plans/<int:id>", week_plans.week_plan_single),
+    path("api/v1/expenses", expenses.expense_list)
 ]
