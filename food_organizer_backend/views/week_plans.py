@@ -18,13 +18,8 @@ def week_plan_list(request):
     serializer = UserSerializer(all_users, many=True)
     user_id = checkToken(token, serializer.data)
     if id:
-        try:
-            target = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
         if request.method == "GET":
-            all_plans = WeekPlan.objects.all()
+            all_plans = WeekPlan.objects.filter(user_id=user_id)
             serializer = WeekPlanSerializer(all_plans, many=True)
             return JsonResponse(serializer.data, safe=False)
         elif request.method == "POST":
@@ -65,4 +60,17 @@ def week_plan_list(request):
 
 @api_view(["GET", "PUT", "DELETE"])
 def week_plan_single(request, id):
-    print("test")
+    token = decrypt(request.headers.get("Authorization").split()[1].encode(), user_salt)
+    all_users = User.objects.all()
+    serializer = UserSerializer(all_users, many=True)
+    user_id = checkToken(token, serializer.data)
+    if id:
+        try:
+            target = WeekPlan.objects.get(pk=id)
+        except WeekPlan.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == "GET":
+            serializer = WeekPlanSerializer(target)
+            return Response(serializer.data)
+    return Response(status=status.HTTP_403_FORBIDDEN)
