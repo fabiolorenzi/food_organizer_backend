@@ -75,4 +75,42 @@ def week_plan_single(request, id):
             if serializer.data["user_id"] == user_id:
                 return Response(serializer.data)
             return Response(status=status.HTTP_403_FORBIDDEN)
+        elif request.method == "PUT":
+            target_ser = WeekPlanSerializer(target).data
+            created_at = target_ser["created_at"]
+            updated_at = datetime.now().strftime("%Y/%m/%d %H:%M:%S").replace(" ", "T").replace("/", "-")
+            serializer = WeekPlanSerializer(
+                target,
+                data={
+                    "user_id": user_id,
+                    "monday_position": request.data["monday_position"],
+                    "monday_breakfast": request.data["monday_breakfast"],
+                    "monday_lunch": request.data["monday_lunch"],
+                    "monday_dinner": request.data["monday_dinner"],
+                    "tuesday_breakfast": request.data["tuesday_breakfast"],
+                    "tuesday_lunch": request.data["tuesday_lunch"],
+                    "tuesday_dinner": request.data["tuesday_dinner"],
+                    "wednesday_breakfast": request.data["wednesday_breakfast"],
+                    "wednesday_lunch": request.data["wednesday_lunch"],
+                    "wednesday_dinner": request.data["wednesday_dinner"],
+                    "thursday_breakfast": request.data["thursday_breakfast"],
+                    "thursday_lunch": request.data["thursday_lunch"],
+                    "thursday_dinner": request.data["thursday_dinner"],
+                    "friday_breakfast": request.data["friday_breakfast"],
+                    "friday_lunch": request.data["friday_lunch"],
+                    "friday_dinner": request.data["friday_dinner"],
+                    "saturday_breakfast": request.data["saturday_breakfast"],
+                    "saturday_lunch": request.data["saturday_lunch"],
+                    "saturday_dinner": request.data["saturday_dinner"],
+                    "sunday_breakfast": request.data["sunday_breakfast"],
+                    "sunday_lunch": request.data["sunday_lunch"],
+                    "sunday_dinner": request.data["sunday_dinner"],
+                    "created_at": created_at,
+                    "updated_at": updated_at
+                }
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_403_FORBIDDEN)
