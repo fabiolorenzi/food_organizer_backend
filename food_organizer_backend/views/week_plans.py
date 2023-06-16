@@ -13,22 +13,21 @@ from setting_data import user_salt
 
 @api_view(["GET", "POST"])
 def week_plan_list(request):
-    if request.method == "GET":
-        all_plans = WeekPlan.objects.all()
-        serializer = WeekPlanSerializer(all_plans, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == "POST":
-        token = decrypt(request.headers.get("Authorization").split()[1].encode(), user_salt)
-        all_users = User.objects.all()
-        serializer = UserSerializer(all_users, many=True)
-        id = checkToken(token, serializer.data)
-        if id:
-            try:
-                target = User.objects.get(pk=id)
-            except User.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+    token = decrypt(request.headers.get("Authorization").split()[1].encode(), user_salt)
+    all_users = User.objects.all()
+    serializer = UserSerializer(all_users, many=True)
+    user_id = checkToken(token, serializer.data)
+    if id:
+        try:
+            target = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-            user_id = UserSerializer(target).data["id"]
+        if request.method == "GET":
+            all_plans = WeekPlan.objects.all()
+            serializer = WeekPlanSerializer(all_plans, many=True)
+            return JsonResponse(serializer.data, safe=False)
+        elif request.method == "POST":
             serializer = WeekPlanSerializer(data={
                 "user_id": user_id,
                 "monday_position": request.data["monday_position"],
@@ -61,3 +60,9 @@ def week_plan_list(request):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_403_FORBIDDEN)
+    return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+def week_plan_single(request, id):
+    print("test")
