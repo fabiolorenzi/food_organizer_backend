@@ -1,3 +1,11 @@
 Food Organizer Backend
 
 If you are going to split the models.py file, update the __init__.py file as you see there.
+
+
+During deployment add to settings.py:
+
+ALLOWED_HOSTS = [
+    "example.com",     # put your domain instead of example
+    ".example.com"
+]
