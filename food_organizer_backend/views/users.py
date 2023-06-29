@@ -177,3 +177,19 @@ def user_login(request):
         else:
             index += 1
     return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["GET"])
+def user_single_user(request):
+    token = decrypt(request.headers.get("Authorization").split()[1].encode(), user_salt)
+    all_users = User.objects.all()
+    serializer = UserSerializer(all_users, many=True)
+    user_id = checkToken(token, serializer.data)
+    if user_id > 0:
+        try:
+            target = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(target)
+        return Response(serializer.data)
+    return Response(status=status.HTTP_403_FORBIDDEN)
