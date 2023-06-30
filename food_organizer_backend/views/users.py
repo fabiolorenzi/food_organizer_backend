@@ -190,6 +190,26 @@ def user_single_user(request):
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UserSerializer(target)
+        targetObj = UserSerializer(target).data
+        username = targetObj["username"]
+        email = targetObj["email"]
+        password = decrypt(targetObj["password"].encode(), user_salt)
+        auth_from = targetObj["auth_from"]
+        auth_until = targetObj["auth_until"]
+        failed_attempts = targetObj["failed_attempts"]
+        blocked_until = targetObj["blocked_until"]
+        created_at = targetObj["created_at"]
+        updated_at = targetObj["updated_at"]
+        serializer = UserSerializer({
+            "username": username,
+            "email": email,
+            "password": password,
+            "auth_from": auth_from,
+            "auth_until": auth_until,
+            "failed_attempts": failed_attempts,
+            "blocked_until": blocked_until,
+            "created_at": created_at,
+            "updated_at": updated_at
+        })
         return Response(serializer.data)
     return Response(status=status.HTTP_403_FORBIDDEN)
