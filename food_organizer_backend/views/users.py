@@ -191,6 +191,7 @@ def user_single_user(request):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         targetObj = UserSerializer(target).data
+        userid = targetObj["id"]
         username = targetObj["username"]
         email = targetObj["email"]
         password = decrypt(targetObj["password"].encode(), user_salt)
@@ -201,6 +202,7 @@ def user_single_user(request):
         created_at = targetObj["created_at"]
         updated_at = targetObj["updated_at"]
         serializer = UserSerializer({
+            "id": userid,
             "username": username,
             "email": email,
             "password": password,
